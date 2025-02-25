@@ -4,14 +4,16 @@ const nodemailer = require('nodemailer');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const csrf = require('csurf');
+const cookieParser = require('cookie-parser'); 
 const axios = require('axios');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(cookieParser()); 
 app.use(helmet());
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
-const csrfProtection = csrf({ cookie: true });
+const csrfProtection = csrf({ cookie: true }); 
 app.use(csrfProtection);
 
 mongoose.connect('mongoose.connect(process.env.DATABASE_URL', { useNewUrlParser: true, useUnifiedTopology: true })
