@@ -14,7 +14,7 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
 
-mongoose.connect('mongodb+srv://AMIR:<db_password>@airdrop.zowdz.mongodb.net/?retryWrites=true&w=majority&appName=airdrop', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongoose.connect(process.env.DATABASE_URL', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('اتصال به MongoDB برقرار شد'))
     .catch(err => console.error('خطا در اتصال به MongoDB:', err));
 
@@ -28,12 +28,12 @@ const User = mongoose.model('User', userSchema);
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'ariarangco@gmail.com', // ایمیل خودت
-        pass: 'vjmchetsomcvqnmv'     // رمز اپلیکیشن
+        user: 'process.env.EMAIL_USER', // ایمیل خودت
+        pass: 'process.env.EMAIL_PASS'     // رمز اپلیکیشن
     }
 });
 
-const ETHERSCAN_API_KEY = 'Q9BB336VQVU8GPH25V7GM2AZDYZ9TSVJM9'; // کلید API خودت
+const ETHERSCAN_API_KEY = 'process.env.ETHERSCAN_API_KEY'; // کلید API خودت
 const BLOCKCHAIN_API_URL = 'https://blockchain.info';
 
 app.get('/check-balances', async (req, res) => {
