@@ -8,14 +8,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/airdrop-project.git"
+    "url": "git+https://github.com/fatifatifati2000/airdrop-project.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/your-username/airdrop-project/issues"
+    "url": "https://github.com/fatifatifati2000/airdrop-project/issues"
   },
-  "homepage": "https://github.com/your-username/airdrop-project#readme",
-  "description": ""
+  "homepage": "https://github.com/fatifatifati2000/airdrop-project#readme",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "csurf": "^1.10.0",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "mongoose": "^8.10.2",
+    "nodemailer": "^6.10.0"
+  }
 }
